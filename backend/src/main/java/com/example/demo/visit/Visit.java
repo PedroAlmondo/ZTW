@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -27,7 +28,7 @@ public class Visit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date startTime;
+    private LocalDateTime startTime;
 
     @ManyToOne
     @JoinColumn(nullable = false, name = "client")
@@ -42,7 +43,7 @@ public class Visit {
     private SingleService service;
 
     @JsonCreator
-    public Visit(@JsonProperty("startTime") Date startTime, @JsonProperty("client") AppUser client, @JsonProperty("employee") AppUser employee, @JsonProperty("service")  SingleService service) {
+    public Visit(@JsonProperty("startTime") LocalDateTime startTime, @JsonProperty("client") AppUser client, @JsonProperty("employee") AppUser employee, @JsonProperty("service")  SingleService service) {
         this.startTime = startTime;
         this.client = client;
         this.employee = employee;
@@ -50,11 +51,11 @@ public class Visit {
     }
 
 
-    public Date getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 

@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.appuser.AppUser;
+import com.example.demo.appuser.AppUserRepository;
 import com.example.demo.appuser.AppUserService;
 import com.example.demo.email.EmailSender;
 import com.example.demo.registration.EmailValidator;
@@ -7,14 +9,25 @@ import com.example.demo.registration.token.ConfirmationToken;
 import com.example.demo.registration.token.ConfirmationTokenService;
 import com.example.demo.visit.Visit;
 import com.example.demo.visit.VisitRepository;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
+import org.apache.tomcat.jni.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 @Service
 @AllArgsConstructor
@@ -23,6 +36,8 @@ public class SingleServiceService {
     private final AppUserService appUserService;
     private final SingleServiceRepository singleServiceRepository;
     private final VisitRepository visitRepository;
+
+    private final AppUserRepository appUserRepository;
 
 
     private final EmailValidator emailValidator;
@@ -68,10 +83,10 @@ public class SingleServiceService {
         Optional<SingleService> optionalService = singleServiceRepository.findById(id);
         if (optionalService.isPresent()) {
 
-            SingleService visit = optionalService.get();
-            List<Visit> visitsToDelete = visitRepository.findByServiceId(visit.getId());
+            SingleService service = optionalService.get();
+            List<Visit> visitsToDelete = visitRepository.findByServiceId(service.getId());
             visitRepository.deleteAll(visitsToDelete);
-            singleServiceRepository.delete(visit);
+            singleServiceRepository.delete(service);
 
         } else {
             throw new NotFoundException("Visit not found");
@@ -102,5 +117,101 @@ public class SingleServiceService {
     }
 
 
+    public String getSpecificServiceAndWorkerAvailability(Date date) throws NotFoundException, JsonProcessingException {
 
+        HashMap<Long, List<LocalDateTime>> occupiedEmployeeHours = new HashMap<>();
+        HashMap<Long, List<LocalDateTime>> freeHoursMap = new HashMap<>();
+
+//        map.put("key", "value");
+//        map.put("foo", "bar");
+//        map.put("aa", "bb");
+
+//        Optional<SingleService> optionalService = singleServiceRepository.findById(serviceId);
+//        if (optionalService.isPresent()) {
+//
+//            SingleService service = optionalService.get();
+            List<AppUser> listUsers = appUserRepository.findAll();//change to find with role admin
+
+
+
+            for (int i = 0; i < listUsers.size(); i++) {
+                List<LocalDateTime> hoursList = new ArrayList<>();
+                long userId = listUsers.get(i).getId();
+                List<Visit> actualWorkerVisits = visitRepository.findByEmployeeIdAndDate(userId, date);
+
+                for (int j = 0; j < actualWorkerVisits.size(); j++) {
+
+                    hoursList.add(actualWorkerVisits.get(j).getStartTime());
+                }
+                occupiedEmployeeHours.put(userId, hoursList);
+
+            }
+            List<LocalDateTime> dates = getDatesInFifteenMinuteIntervals(date);
+            HashSet<LocalDateTime> allFreeHours = new HashSet<>();
+
+
+            for (Map.Entry<Long, List<LocalDateTime>> entry : occupiedEmployeeHours.entrySet()) {
+                Long employeeId = entry.getKey();
+                List<LocalDateTime> occupiedHours = entry.getValue();
+
+                // Utworzenie listy wolnych godzin dla danego pracownika
+                List<LocalDateTime> freeHours = new ArrayList<>(dates);
+                freeHours.removeAll(occupiedHours);
+                allFreeHours.addAll(freeHours);
+
+                // Dodanie do mapy wolnych godzin
+                freeHoursMap.put(employeeId, freeHours);
+
+            }
+            SimpleModule module = new SimpleModule();
+            module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
+            JsonReturner jsonReturner = new JsonReturner(allFreeHours, freeHoursMap);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(module);
+
+
+        return objectMapper.writeValueAsString(jsonReturner);
+    }
+
+    public static List<LocalDateTime> getDatesInFifteenMinuteIntervals(Date currentDate) {
+        List<LocalDateTime> dates = new ArrayList<>();
+        LocalDateTime today = LocalDateTime.ofInstant(currentDate.toInstant(), ZoneId.systemDefault());
+        LocalDateTime dateTime = today.withHour(9).withMinute(0).withSecond(0);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+
+        while (dateTime.getHour() < 18) {
+            dates.add(LocalDateTime.parse(dateTime.format(formatter)));
+            dateTime = dateTime.plusMinutes(15);
+        }
+    return dates;
+    }
+}
+class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+
+
+    @Override
+    public void serialize(LocalDateTime localDateTime, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        jsonGenerator.writeString(localDateTime.format(FORMATTER));
+    }
+}
+
+class JsonReturner {
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private Map<Long, List<LocalDateTime>> userFreeHours;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    private HashSet<LocalDateTime> freeHours;
+
+    public JsonReturner(HashSet<LocalDateTime> freeHours, Map<Long, List<LocalDateTime>> userFreeHours) {
+        this.userFreeHours = userFreeHours;
+        this.freeHours = freeHours;
+    }
+
+    public Map<Long, List<LocalDateTime>> getMapField() {
+        return userFreeHours;
+    }
+
+    public HashSet<LocalDateTime> getListField() {
+        return freeHours;
+    }
 }

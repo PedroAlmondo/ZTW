@@ -6,6 +6,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -26,6 +28,9 @@ public interface VisitRepository
 
     @Query("SELECT v FROM Visit v WHERE v.employee.id = :id")
     List<Visit> findByEmployeeId(@Param("id") Long employee_id);
+
+    @Query("SELECT v FROM Visit v WHERE v.employee.id = :id AND DATE(v.startTime) = DATE(:startTime)")
+    List<Visit> findByEmployeeIdAndDate(@Param("id") Long employee_id, @Param("startTime") Date startTime);
 
     @Query("SELECT v FROM Visit v WHERE v.service.id = :id")
     List<Visit> findByServiceId(@Param("id") Long service_id);
