@@ -21,11 +21,14 @@ public class SingleService {
     private int durationMins;
     private float price;
 
+    private String description;
 
-    public SingleService(String name, int durationMins, float price) {
+
+    public SingleService(String name, int durationMins, float price, String description) {
         this.name = name;
         this.durationMins = durationMins;
         this.price = price;
+        this.description = description;
     }
 
     public Long getId() {
@@ -54,5 +57,13 @@ public class SingleService {
 
     public void setPrice(float price) {
         this.price = price;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

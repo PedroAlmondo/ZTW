@@ -130,47 +130,65 @@ public class SingleServiceService {
 //        if (optionalService.isPresent()) {
 //
 //            SingleService service = optionalService.get();
-            List<AppUser> listUsers = appUserRepository.findAll();//change to find with role admin
+        List<AppUser> listUsers = appUserRepository.findAll();//change to find with role admin
 
 
+        for (int i = 0; i < listUsers.size(); i++) {
+            List<LocalDateTime> hoursList = new ArrayList<>();
+            long userId = listUsers.get(i).getId();
+            List<Visit> actualWorkerVisits = visitRepository.findByEmployeeIdAndDate(userId, date);
 
-            for (int i = 0; i < listUsers.size(); i++) {
-                List<LocalDateTime> hoursList = new ArrayList<>();
-                long userId = listUsers.get(i).getId();
-                List<Visit> actualWorkerVisits = visitRepository.findByEmployeeIdAndDate(userId, date);
+            for (int j = 0; j < actualWorkerVisits.size(); j++) {
 
-                for (int j = 0; j < actualWorkerVisits.size(); j++) {
+                Optional<SingleService> optionalService = singleServiceRepository.findById(actualWorkerVisits.get(j).getService().getId());
+                if (optionalService.isPresent()) {
+                    SingleService service = optionalService.get();
 
-                    hoursList.add(actualWorkerVisits.get(j).getStartTime());
+                    int duration = service.getDurationMins();
+                    LocalDateTime startServiceTime = actualWorkerVisits.get(j).getStartTime();
+
+                    do {
+                        hoursList.add(startServiceTime);
+                        startServiceTime = startServiceTime.plusMinutes(15);
+                        duration -= 15;
+                    }
+                    while (duration > 0);
+
                 }
+
+
+                //hoursList.add(actualWorkerVisits.get(j).getStartTime());
+
                 occupiedEmployeeHours.put(userId, hoursList);
 
             }
-            List<LocalDateTime> dates = getDatesInFifteenMinuteIntervals(date);
-            HashSet<LocalDateTime> allFreeHours = new HashSet<>();
+        }
+        List<LocalDateTime> dates = getDatesInFifteenMinuteIntervals(date);
+        HashSet<LocalDateTime> allFreeHours = new HashSet<>();
 
 
-            for (Map.Entry<Long, List<LocalDateTime>> entry : occupiedEmployeeHours.entrySet()) {
-                Long employeeId = entry.getKey();
-                List<LocalDateTime> occupiedHours = entry.getValue();
+        for (Map.Entry<Long, List<LocalDateTime>> entry : occupiedEmployeeHours.entrySet()) {
+            Long employeeId = entry.getKey();
+            List<LocalDateTime> occupiedHours = entry.getValue();
 
-                // Utworzenie listy wolnych godzin dla danego pracownika
-                List<LocalDateTime> freeHours = new ArrayList<>(dates);
-                freeHours.removeAll(occupiedHours);
-                allFreeHours.addAll(freeHours);
+            // Utworzenie listy wolnych godzin dla danego pracownika
+            List<LocalDateTime> freeHours = new ArrayList<>(dates);
+            freeHours.removeAll(occupiedHours);
+            allFreeHours.addAll(freeHours);
 
-                // Dodanie do mapy wolnych godzin
-                freeHoursMap.put(employeeId, freeHours);
+            // Dodanie do mapy wolnych godzin
+            freeHoursMap.put(employeeId, freeHours);
 
-            }
-            SimpleModule module = new SimpleModule();
-            module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
-            JsonReturner jsonReturner = new JsonReturner(allFreeHours, freeHoursMap);
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(module);
+        }
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
+        JsonReturner jsonReturner = new JsonReturner(allFreeHours, freeHoursMap);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(module);
 
 
         return objectMapper.writeValueAsString(jsonReturner);
+
     }
 
     public static List<LocalDateTime> getDatesInFifteenMinuteIntervals(Date currentDate) {

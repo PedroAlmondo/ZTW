@@ -15,11 +15,11 @@ VALUES
 
 
 -- Wstawianie serwisów
-INSERT INTO single_service (name, duration_mins, price)
+INSERT INTO single_service (name, duration_mins, price, description)
 VALUES
-    ('cut', 60, 50.0),
-    ('color', 120, 80.0),
-    ('trim', 30, 25.0);
+    ('cut', 60, 50.0, 'We gonna cut your hair'),
+    ('color', 120, 80.0, 'We gonna color your hair'),
+    ('trim', 30, 25.0, 'We gonna trim your hair');
 
 select * from app_user;
 select * from visit p
