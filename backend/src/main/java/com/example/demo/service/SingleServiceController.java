@@ -32,9 +32,9 @@ public class SingleServiceController {
     }
 
     //example use: localhost:8080/api/v1/services/2023-05-27
-    @GetMapping("/{date}")
-    public ResponseEntity<String> getSpecificServiceAndWorkerAvailability(@PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date) throws NotFoundException, JsonProcessingException {
-        return ResponseEntity.ok(singleServiceService.getSpecificServiceAndWorkerAvailability(date));
+    @GetMapping("/{id}/{date}")
+    public ResponseEntity<String> getSpecificServiceAndWorkerAvailability(@PathVariable("date") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date, @PathVariable Long id) throws NotFoundException, JsonProcessingException {
+        return ResponseEntity.ok(singleServiceService.getSpecificServiceAndWorkerAvailability(id, date));
     }
 
     @DeleteMapping("/{id}")

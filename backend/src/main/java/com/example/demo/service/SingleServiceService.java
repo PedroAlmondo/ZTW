@@ -118,7 +118,15 @@ public class SingleServiceService {
     }
 
 
-    public String getSpecificServiceAndWorkerAvailability(Date date) throws NotFoundException, JsonProcessingException {
+    public String getSpecificServiceAndWorkerAvailability(Long serviceId, Date date) throws NotFoundException, JsonProcessingException {
+
+        Optional<SingleService> optionalChosenService = singleServiceRepository.findById(serviceId);
+        SingleService chosenService;
+        if (optionalChosenService.isPresent()) {
+            chosenService = optionalChosenService.get();
+        }
+        else throw new NotFoundException("Nie znaleziono usługi o podanym id.");
+        int chosenServiceDurationTime = chosenService.getDurationMins();
 
         HashMap<Long, List<LocalDateTime>> occupiedEmployeeHours = new HashMap<>();
         HashMap<Long, List<LocalDateTime>> freeHoursMap = new HashMap<>();
@@ -127,12 +135,8 @@ public class SingleServiceService {
 //        map.put("foo", "bar");
 //        map.put("aa", "bb");
 
-//        Optional<SingleService> optionalService = singleServiceRepository.findById(serviceId);
-//        if (optionalService.isPresent()) {
-//
-//            SingleService service = optionalService.get();
-        List<AppUser> listUsers = appUserRepository.findAllWorkers(AppUserRole.ADMIN);//change to find with role admin
 
+        List<AppUser> listUsers = appUserRepository.findAllWorkers(AppUserRole.ADMIN);//change to find with role admin
 
         for (int i = 0; i < listUsers.size(); i++) {
             List<LocalDateTime> hoursList = new ArrayList<>();
@@ -154,6 +158,18 @@ public class SingleServiceService {
                         duration -= 15;
                     }
                     while (duration > 0);
+
+                    startServiceTime = actualWorkerVisits.get(j).getStartTime();
+//                    do {
+//                        hoursList.add(startServiceTime);
+//                        startServiceTime = startServiceTime.plusMinutes(15);
+//                        chosenServiceDurationTime -= 15;
+//                    }
+                    while (chosenServiceDurationTime > 15){
+                        chosenServiceDurationTime -= 15;
+                        startServiceTime = startServiceTime.minusMinutes(15);
+                        hoursList.add(startServiceTime);
+                    }
 
                 }
 
