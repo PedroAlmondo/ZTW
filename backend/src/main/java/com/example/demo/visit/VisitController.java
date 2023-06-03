@@ -23,12 +23,8 @@ public class VisitController {
     }
 
     @PostMapping
-    public ResponseEntity<?> makeAReservation(@RequestBody Visit visit) {
-        try {
-            return ResponseEntity.ok(visitService.makeAReservation(visit));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Invalid entity");
-        }
+    public ResponseEntity<?> makeAReservation(@RequestBody Visit visit) throws NotFoundException {
+        return ResponseEntity.ok(visitService.makeAReservation(visit));
     }
 
     @GetMapping

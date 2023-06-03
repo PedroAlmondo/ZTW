@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.appuser.AppUser;
 import com.example.demo.appuser.AppUserRepository;
+import com.example.demo.appuser.AppUserRole;
 import com.example.demo.appuser.AppUserService;
 import com.example.demo.email.EmailSender;
 import com.example.demo.registration.EmailValidator;
@@ -130,13 +131,13 @@ public class SingleServiceService {
 //        if (optionalService.isPresent()) {
 //
 //            SingleService service = optionalService.get();
-        List<AppUser> listUsers = appUserRepository.findAll();//change to find with role admin
+        List<AppUser> listUsers = appUserRepository.findAllWorkers(AppUserRole.ADMIN);//change to find with role admin
 
 
         for (int i = 0; i < listUsers.size(); i++) {
             List<LocalDateTime> hoursList = new ArrayList<>();
             long userId = listUsers.get(i).getId();
-            List<Visit> actualWorkerVisits = visitRepository.findByEmployeeIdAndDate(userId, date);
+            List<Visit> actualWorkerVisits = visitRepository.findByEmployeeIdAndDate(userId, date, AppUserRole.ADMIN);
 
             for (int j = 0; j < actualWorkerVisits.size(); j++) {
 
@@ -166,20 +167,33 @@ public class SingleServiceService {
         List<LocalDateTime> dates = getDatesInFifteenMinuteIntervals(date);
         HashSet<LocalDateTime> allFreeHours = new HashSet<>();
 
-
-        for (Map.Entry<Long, List<LocalDateTime>> entry : occupiedEmployeeHours.entrySet()) {
-            Long employeeId = entry.getKey();
-            List<LocalDateTime> occupiedHours = entry.getValue();
-
-            // Utworzenie listy wolnych godzin dla danego pracownika
-            List<LocalDateTime> freeHours = new ArrayList<>(dates);
-            freeHours.removeAll(occupiedHours);
-            allFreeHours.addAll(freeHours);
-
-            // Dodanie do mapy wolnych godzin
-            freeHoursMap.put(employeeId, freeHours);
-
+        if (occupiedEmployeeHours.isEmpty()){
+            allFreeHours.addAll(dates);
+            for (AppUser listUser : listUsers) {
+                freeHoursMap.put(listUser.getId(), dates);
+            }
         }
+        else {
+            for (Map.Entry<Long, List<LocalDateTime>> entry : occupiedEmployeeHours.entrySet()) {
+                Long employeeId = entry.getKey();
+                List<LocalDateTime> occupiedHours = entry.getValue();
+
+                // Utworzenie listy wolnych godzin dla danego pracownika
+                List<LocalDateTime> freeHours = new ArrayList<>(dates);
+                freeHours.removeAll(occupiedHours);
+                allFreeHours.addAll(freeHours);
+
+                // Dodanie do mapy wolnych godzin
+                freeHoursMap.put(employeeId, freeHours);
+
+            }
+            for (AppUser listUser : listUsers) {
+                if(!freeHoursMap.containsKey(listUser.getId())){
+                    freeHoursMap.put(listUser.getId(), dates);
+                }
+            }
+        }
+
         SimpleModule module = new SimpleModule();
         module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
         JsonReturner jsonReturner = new JsonReturner(allFreeHours, freeHoursMap);

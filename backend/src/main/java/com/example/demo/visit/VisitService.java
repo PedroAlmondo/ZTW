@@ -39,8 +39,10 @@ public class VisitService {
         AppUser client = appUserRepository.findById(visit.getClient().getId()).orElseThrow(() -> new NotFoundException("Nie znaleziono klienta o podanym identyfikatorze"));
 
         // Pobranie pracownika na podstawie identyfikatora
-        AppUser employee = appUserRepository.findById(visit.getEmployee().getId()).orElseThrow(() -> new NotFoundException("Nie znaleziono pracownika o podanym identyfikatorze"));
 
+        //AppUser employee = appUserRepository.findById(visit.getEmployee().getId()).orElseThrow(() -> new NotFoundException("Nie znaleziono pracownika o podanym identyfikatorze"));
+        AppUser employee = appUserRepository.findByEmployeeId(visit.getEmployee().getId(), AppUserRole.ADMIN);
+        if (employee == null) throw new NotFoundException("Nie znaleziono pracownika o podanym identyfikatorze");
         // Pobranie usługi na podstawie identyfikatora
         SingleService service = serviceRepository.findById(visit.getService().getId()).orElseThrow(() -> new NotFoundException("Nie znaleziono usługi o podanym identyfikatorze"));
 

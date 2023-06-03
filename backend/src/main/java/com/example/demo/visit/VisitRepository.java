@@ -1,5 +1,6 @@
 package com.example.demo.visit;
 
+import com.example.demo.appuser.AppUserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,8 +30,8 @@ public interface VisitRepository
     @Query("SELECT v FROM Visit v WHERE v.employee.id = :id")
     List<Visit> findByEmployeeId(@Param("id") Long employee_id);
 
-    @Query("SELECT v FROM Visit v WHERE v.employee.id = :id AND DATE(v.startTime) = DATE(:startTime)")
-    List<Visit> findByEmployeeIdAndDate(@Param("id") Long employee_id, @Param("startTime") Date startTime);
+    @Query("SELECT v FROM Visit v WHERE v.employee.id = :id AND DATE(v.startTime) = DATE(:startTime) and v.employee.appUserRole = :role")
+    List<Visit> findByEmployeeIdAndDate(@Param("id") Long employee_id, @Param("startTime") Date startTime, @Param("role") AppUserRole role);
 
     @Query("SELECT v FROM Visit v WHERE v.service.id = :id")
     List<Visit> findByServiceId(@Param("id") Long service_id);
