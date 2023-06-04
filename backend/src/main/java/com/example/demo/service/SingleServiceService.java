@@ -235,7 +235,7 @@ public class SingleServiceService {
     }
 }
 class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
 
     @Override
