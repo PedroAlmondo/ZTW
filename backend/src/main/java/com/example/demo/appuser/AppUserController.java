@@ -1,15 +1,17 @@
 package com.example.demo.appuser;
 
+import javassist.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/v1//users")
+@RequestMapping("api/v1/users")
 public class AppUserController {
 
     private final AppUserRepository appUserRepository;
@@ -27,5 +29,10 @@ public class AppUserController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    @GetMapping("/workers")
+    public ResponseEntity<List<AppUser>> getAllWorkers() {
+        List<AppUser> allWorkers = appUserRepository.findAllWorkers(AppUserRole.ADMIN);
+        return ResponseEntity.ok(allWorkers);
     }
 }
