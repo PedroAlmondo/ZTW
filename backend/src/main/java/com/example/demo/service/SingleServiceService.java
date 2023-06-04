@@ -209,10 +209,14 @@ public class SingleServiceService {
                 }
             }
         }
+        TreeSet<LocalDateTime> sortedSet = new TreeSet<>(new DateTimeComparator());
+
+        // Dodawanie wszystkich elementów z HashSet do TreeSet
+        sortedSet.addAll(allFreeHours);
 
         SimpleModule module = new SimpleModule();
         module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
-        JsonReturner jsonReturner = new JsonReturner(allFreeHours, freeHoursMap);
+        JsonReturner jsonReturner = new JsonReturner(sortedSet, freeHoursMap);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(module);
 
@@ -220,6 +224,14 @@ public class SingleServiceService {
         return objectMapper.writeValueAsString(jsonReturner);
 
     }
+
+    static class DateTimeComparator implements Comparator<LocalDateTime> {
+        @Override
+        public int compare(LocalDateTime dateTime1, LocalDateTime dateTime2) {
+            return dateTime1.compareTo(dateTime2);
+        }
+    }
+
 
     public static List<LocalDateTime> getDatesInFifteenMinuteIntervals(Date currentDate) {
         List<LocalDateTime> dates = new ArrayList<>();
@@ -233,6 +245,7 @@ public class SingleServiceService {
         }
     return dates;
     }
+
 }
 class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
@@ -242,15 +255,16 @@ class LocalDateTimeSerializer extends JsonSerializer<LocalDateTime> {
     public void serialize(LocalDateTime localDateTime, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeString(localDateTime.format(FORMATTER));
     }
+
 }
 
 class JsonReturner {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private Map<Long, List<LocalDateTime>> userFreeHours;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    private HashSet<LocalDateTime> freeHours;
+    private TreeSet<LocalDateTime> freeHours;
 
-    public JsonReturner(HashSet<LocalDateTime> freeHours, Map<Long, List<LocalDateTime>> userFreeHours) {
+    public JsonReturner(TreeSet<LocalDateTime> freeHours, Map<Long, List<LocalDateTime>> userFreeHours) {
         this.userFreeHours = userFreeHours;
         this.freeHours = freeHours;
     }
@@ -259,7 +273,7 @@ class JsonReturner {
         return userFreeHours;
     }
 
-    public HashSet<LocalDateTime> getListField() {
+    public TreeSet<LocalDateTime> getListField() {
         return freeHours;
     }
 }
