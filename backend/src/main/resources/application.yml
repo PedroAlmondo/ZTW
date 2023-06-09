@@ -16,6 +16,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
+  flyway:
+    url: jdbc:postgresql://localhost:5432/barberdb
+    user: postgres
+    password: password
+    locations: classpath:db/migration
 
   mail:
     host: localhost

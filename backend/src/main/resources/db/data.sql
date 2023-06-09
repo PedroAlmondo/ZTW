@@ -26,3 +26,4 @@ VALUES
 select * from app_user;
 select * from visit p
          where p.client.id = 3
+
