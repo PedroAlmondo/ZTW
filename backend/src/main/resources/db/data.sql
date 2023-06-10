@@ -21,6 +21,8 @@ VALUES
     ('color', 120, 80.0, 'We gonna color your hair'),
     ('trim', 30, 25.0, 'We gonna trim your hair');
 
+
+
 select * from app_user;
 select * from visit p
          where p.client.id = 3

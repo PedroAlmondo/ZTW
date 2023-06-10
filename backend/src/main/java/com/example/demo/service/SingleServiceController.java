@@ -16,6 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/v1/services")
+@CrossOrigin
 @AllArgsConstructor
 public class SingleServiceController {
 
