@@ -14,6 +14,7 @@ interface ServiceData {
     name: string,
     durationMins: number,
     price: number,
+    description: string,
 }
 
 function Booking() {
@@ -103,6 +104,7 @@ function Booking() {
                 return response.json();
             })
             .then((actualData) => {
+                console.log(actualData);
                 setServicesData(actualData);
                 setServicesError(null);
             })
@@ -147,16 +149,16 @@ function Booking() {
                             <ToggleButton value="afternoon">Popołudniu</ToggleButton>
                             <ToggleButton value="evening">Wieczorem</ToggleButton>
                         </ToggleButtonGroup>
-                        {timeOfDaySelection == 'morning' && <Stack direction='row' flexWrap='wrap' alignContent={'start'} justifyContent={'center'} sx={{ padding: '10px', maxWidth: '600px', height: '150px' }}>{timeSlotsData?.filter(time => Number(time.split(':')[0]) > 0 && Number(time.split(':')[0]) < 12).map((timeSlot) => <Button variant='contained' onClick={() => timeSlotChangeHandler(timeSlot)} key={timeSlot} sx={{ marginTop: '4px', marginRight: '4px', width: '40px' }}>{timeSlot}</Button>)}</Stack>}
-                        {timeOfDaySelection == 'afternoon' && <Stack direction='row' flexWrap='wrap' alignContent={'start'} justifyContent={'center'} sx={{ padding: '10px', maxWidth: '600px', height: '150px' }}>{timeSlotsData?.filter(time => Number(time.split(':')[0]) >= 12 && Number(time.split(':')[0]) < 16).map((timeSlot) => <Button variant='contained' onClick={() => timeSlotChangeHandler(timeSlot)} key={timeSlot} sx={{ marginTop: '4px', marginRight: '4px', width: '40px' }}>{timeSlot}</Button>)}</Stack>}
-                        {timeOfDaySelection == 'evening' && <Stack direction='row' flexWrap='wrap' alignContent={'start'} justifyContent={'center'} sx={{ padding: '10px', maxWidth: '600px', height: '150px' }}>{timeSlotsData?.filter(time => Number(time.split(':')[0]) >= 16 && Number(time.split(':')[0]) < 24).map((timeSlot) => <Button variant='contained' onClick={() => timeSlotChangeHandler(timeSlot)} key={timeSlot} sx={{ marginTop: '4px', marginRight: '4px', width: '40px' }}>{timeSlot}</Button>)}</Stack>}
+                        {timeOfDaySelection === 'morning' && <Stack direction='row' flexWrap='wrap' alignContent={'start'} justifyContent={'center'} sx={{ padding: '10px', maxWidth: '600px', height: '150px' }}>{timeSlotsData?.filter(time => Number(time.split(':')[0]) > 0 && Number(time.split(':')[0]) < 12).map((timeSlot) => <Button variant='contained' onClick={() => timeSlotChangeHandler(timeSlot)} key={timeSlot} sx={{ marginTop: '4px', marginRight: '4px', width: '40px' }}>{timeSlot}</Button>)}</Stack>}
+                        {timeOfDaySelection === 'afternoon' && <Stack direction='row' flexWrap='wrap' alignContent={'start'} justifyContent={'center'} sx={{ padding: '10px', maxWidth: '600px', height: '150px' }}>{timeSlotsData?.filter(time => Number(time.split(':')[0]) >= 12 && Number(time.split(':')[0]) < 16).map((timeSlot) => <Button variant='contained' onClick={() => timeSlotChangeHandler(timeSlot)} key={timeSlot} sx={{ marginTop: '4px', marginRight: '4px', width: '40px' }}>{timeSlot}</Button>)}</Stack>}
+                        {timeOfDaySelection === 'evening' && <Stack direction='row' flexWrap='wrap' alignContent={'start'} justifyContent={'center'} sx={{ padding: '10px', maxWidth: '600px', height: '150px' }}>{timeSlotsData?.filter(time => Number(time.split(':')[0]) >= 16 && Number(time.split(':')[0]) < 24).map((timeSlot) => <Button variant='contained' onClick={() => timeSlotChangeHandler(timeSlot)} key={timeSlot} sx={{ marginTop: '4px', marginRight: '4px', width: '40px' }}>{timeSlot}</Button>)}</Stack>}
                         <Stack direction='row' spacing={2} flexWrap='wrap' justifyContent={'center'} sx={{ padding: '20px', maxWidth: '400px' }}>{availableWorkers && availableWorkers.map(worker => <IconButton><Avatar>{worker}</Avatar></IconButton>)}</Stack>
                         <Stack direction='row' spacing={2}><Button variant='contained' sx={{ marginBottom: '24px', height: '40px' }}>Anuluj</Button><Button variant='contained' sx={{ marginBottom: '24px', height: '40px' }}>Umów</Button></Stack>
 
                     </Stack>
                 </Modal>
                 <Typography sx={{ marginLeft: 'auto', marginRight: 'auto', fontSize: '40px', fontWeight: 700 }}>Nasze Usługi</Typography>
-                {servicesData && servicesData.map(({ id, name, durationMins, price }) => <Service key={id} name={name} price={price} duration={durationMins} description='Description' onClick={() => appointmentOnClick(id)}></Service>)}
+                {servicesData && servicesData.map(({ id, name, durationMins, price, description }) => <Service key={id} name={name} price={price} duration={durationMins} description={description} onClick={() => appointmentOnClick(id)}></Service>)}
             </Stack>
         </>
     )
