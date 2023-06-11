@@ -69,7 +69,7 @@ public class AppUserService implements UserDetailsService {
         return token;
     }
 
-    public long loginUser(String userEmail, String userInputPassword) throws Exception {
+    public AppUser loginUser(String userEmail, String userInputPassword) throws Exception {
 
         Optional<AppUser> optionalUser = appUserRepository
                 .findByEmail(userEmail);
@@ -87,7 +87,7 @@ public class AppUserService implements UserDetailsService {
         String encodedPassword = user.getPassword();
         boolean passwordMatches = bCryptPasswordEncoder.matches(userInputPassword, encodedPassword);
         if (passwordMatches){
-            return user.getId();
+            return user;
         }
         else throw new Exception("Password do not match!");
     }

@@ -21,7 +21,7 @@ public class LoggingService {
     private final EmailValidator emailValidator;
     private final EmailSender emailSender;
 
-    public long login(LoggingRequest request) throws Exception {
+    public AppUser login(LoggingRequest request) throws Exception {
         boolean isValidEmail = emailValidator.
                 test(request.getEmail());
 
