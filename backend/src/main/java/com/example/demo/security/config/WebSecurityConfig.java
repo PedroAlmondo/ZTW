@@ -20,6 +20,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http
+//                .csrf().disable()
+//                .authorizeRequests()
+//                .antMatchers("/api/v*/registration/**").permitAll()
+//                .antMatchers("/api/v1/login").permitAll() // Dodajemy regułę dla endpointu logowania
+//                .anyRequest().authenticated()
+//                .and()
+//                .formLogin()
+//                .loginPage("/api/v1/login") // Określamy ścieżkę do endpointu logowania
+//                .permitAll(); // Pozwalamy na dostęp do formularza logowania dla wszystkich
+//    }
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()

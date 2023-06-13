@@ -214,6 +214,17 @@ public class SingleServiceService {
         // Dodawanie wszystkich elementów z HashSet do TreeSet
         sortedSet.addAll(allFreeHours);
 
+        // Pobierz aktualną datę i godzinę
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        // Sprawdź, czy data z parametru jest dzisiejszą datą
+        if (currentDateTime.toLocalDate().equals(date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())) {
+            // Utwórz widok zbioru z datami i godzinami po aktualnym czasie
+            sortedSet = new TreeSet<>(sortedSet.tailSet(currentDateTime));
+
+
+        }
+
         SimpleModule module = new SimpleModule();
         module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer());
         JsonReturner jsonReturner = new JsonReturner(sortedSet, freeHoursMap);
