@@ -22,7 +22,7 @@ function Service(props: ServiceProps) {
                     <Typography sx={{ fontSize: '14px', color: '#383734' }}>{props.price} zł</Typography>
                     <Typography sx={{ fontSize: '12px', color: '#a9a9a9' }}>{props.duration} min</Typography>
                 </Stack>
-                <Button variant='contained' onClick={props.onClick} sx={{ backgroundColor: 'rgb(33, 140, 172)', width: '100px', ':hover': { backgroundColor: 'rgb(33, 140, 172)' } }}>Umów</Button>
+                <Button variant='contained' onClick={props.onClick} sx={{ width: '100px' }}>{localStorage.getItem('userRole') === 'USER' ? 'Umów' : 'Usuń'}</Button>
             </Stack>
         </Stack>
     )

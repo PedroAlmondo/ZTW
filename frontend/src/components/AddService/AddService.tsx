@@ -1,5 +1,5 @@
 import React from 'react'
-import { Stack, Typography, TextField, Button } from '@mui/material'
+import { Stack, Typography, TextField, Button, Snackbar, Alert } from '@mui/material'
 
 function AddService() {
     const [serviceName, setServiceName] = React.useState('');
@@ -7,6 +7,24 @@ function AddService() {
     const [servicePrice, setServicePrice] = React.useState<String | Number>(0);
     const [serviceDuration, setServiceDuration] = React.useState<String | Number>(15);
 
+    const [open, setOpen] = React.useState(false);
+    const [errorOpen, setErrorOpen] = React.useState(false);
+
+    const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+    };
+
+    const handleErrorClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setErrorOpen(false);
+    };
 
 
     const handleAddService = () => {
@@ -26,13 +44,14 @@ function AddService() {
                         `This is an HTTP error: The status is ${response.status}`
                     );
                 }
+                setOpen(true);
                 return response.json();
             })
             .then((actualData) => {
-                console.log(actualData);
+
             })
             .catch((err) => {
-
+                setErrorOpen(true);
             })
             .finally(() => {
 
@@ -40,7 +59,7 @@ function AddService() {
     }
 
     return (
-        <Stack sx={{ maxWidth: '1024px', margin: 'auto', minHeight: '100vh', padding: '40px 0px 40px 0px' }}>
+        <Stack sx={{ maxWidth: '1024px', margin: 'auto', minHeight: '100vh', padding: '40px' }}>
             <Typography sx={{ fontSize: '40px', fontWeight: 700, marginLeft: 'auto', marginRight: 'auto' }}>Dodaj usługę</Typography>
             <TextField
                 label="Nazwa usługi"
@@ -59,13 +78,12 @@ function AddService() {
                 sx={{ margin: '10px 0px 10px 0px' }}
             />
             <TextField
-                label="Długość trwania usługi"
+                label="Długość trwania usługi (w minutach)"
                 type='number'
                 value={serviceDuration}
                 InputProps={{ inputProps: { min: 15, step: 15 } }}
                 onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                     setServiceDuration(event.target.value === '' ? '' : Number(event.target.value));
-                    console.log(typeof (event.target.value));
                 }}
                 sx={{ margin: '10px 0px 10px 0px' }}
             />
@@ -79,7 +97,17 @@ function AddService() {
                 }}
                 sx={{ margin: '10px 0px 10px 0px' }}
             />
-            <Button variant="contained" onClick={() => handleAddService()} sx={{ width: '180px', margin: '10px auto 10px auto' }}>Zarejestruj się</Button>
+            <Button variant="contained" onClick={() => handleAddService()} sx={{ width: '180px', margin: '10px auto 10px auto' }}>Dodaj</Button>
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+                    Pomyślnie dodano nową usługę!
+                </Alert>
+            </Snackbar>
+            <Snackbar open={errorOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+                <Alert onClose={handleErrorClose} severity="error" sx={{ width: '100%' }}>
+                    Wystąpił błąd podczas dodawania usługi!
+                </Alert>
+            </Snackbar>
         </Stack>)
 }
 
