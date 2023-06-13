@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
-import { AppBar, Box, Button, IconButton, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, Button, IconButton, Stack, Toolbar, Typography } from '@mui/material'
 import { Link } from 'react-router-dom';
 
 interface NavbarProps {
@@ -20,16 +20,20 @@ function Navbar(props: NavbarProps) {
     return (
         <AppBar position="absolute" sx={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
             <Toolbar >
-                <Link to='/'>
-                    <Typography sx={{ fontSize: '24px', fontWeight: '700' }}>
-                        BarberShop
-                    </Typography>
-                </Link>
-                {props.userId && localStorage.getItem('userRole') === 'ADMIN' && <Link to='addservice'><Button variant='contained' sx={{}}>Dodaj usługę</Button></Link>}
-                {props.userId && <Link to='visits'><Button variant='contained' sx={{}}>Przeglądaj wizyty</Button></Link>}
-                {!props.userId && <Link to='login'><Button variant='contained' sx={{}}>Zaloguj</Button></Link>}
-                {!props.userId && <Link to='register'><Button variant='contained' sx={{}}>Zarejestruj</Button></Link>}
-                {props.userId && <Link to='login'><Button variant='contained' onClick={handleLogout}>Wyloguj</Button></Link>}
+                <Stack direction='row' justifyContent='space-between' sx={{ width: '100%' }}>
+                    <Link to='/'>
+                        <Typography sx={{ fontSize: '24px', fontWeight: '700' }}>
+                            BarberShop
+                        </Typography>
+                    </Link>
+                    <Stack direction='row' spacing='8px'>
+                        {props.userId && localStorage.getItem('userRole') === 'ADMIN' && <Link to='addservice'><Button variant='contained' sx={{}}>Dodaj usługę</Button></Link>}
+                        {props.userId && <Link to='visits'><Button variant='contained' sx={{}}>Przeglądaj wizyty</Button></Link>}
+                        {!props.userId && <Link to='login'><Button variant='contained' sx={{}}>Zaloguj</Button></Link>}
+                        {!props.userId && <Link to='register'><Button variant='contained' sx={{}}>Zarejestruj</Button></Link>}
+                        {props.userId && <Link to='login'><Button variant='contained' onClick={handleLogout}>Wyloguj</Button></Link>}
+                    </Stack>
+                </Stack>
             </Toolbar>
         </AppBar>
     )
