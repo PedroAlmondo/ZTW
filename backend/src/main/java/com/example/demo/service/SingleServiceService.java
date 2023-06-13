@@ -165,6 +165,7 @@ public class SingleServiceService {
 //                        startServiceTime = startServiceTime.plusMinutes(15);
 //                        chosenServiceDurationTime -= 15;
 //                    }
+//                    int durTime = chosenServiceDurationTime;
                     while (chosenServiceDurationTime > 15){
                         chosenServiceDurationTime -= 15;
                         startServiceTime = startServiceTime.minusMinutes(15);
@@ -179,6 +180,19 @@ public class SingleServiceService {
                 occupiedEmployeeHours.put(userId, hoursList);
 
             }
+            //
+            LocalDateTime today = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+            LocalDateTime dateTime = today.withHour(18).withMinute(0).withSecond(0);
+            chosenServiceDurationTime = chosenService.getDurationMins();
+            while (chosenServiceDurationTime > 15) {
+                chosenServiceDurationTime -= 15;
+                dateTime = dateTime.minusMinutes(15);
+                hoursList.add(dateTime);
+            }
+            occupiedEmployeeHours.put(userId, hoursList);
+
+
+            //tu
         }
         List<LocalDateTime> dates = getDatesInFifteenMinuteIntervals(date);
         HashSet<LocalDateTime> allFreeHours = new HashSet<>();

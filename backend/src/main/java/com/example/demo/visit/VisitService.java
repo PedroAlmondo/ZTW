@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityExistsException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,8 @@ public class VisitService {
     private final EmailSender emailSender;
 
     public Visit makeAReservation(Visit visit) throws NotFoundException {
+
+        if( visitRepository.existsByStartTime(visit.getStartTime()) ) throw new EntityExistsException("Someone's already booked that date.");
         // Pobranie klienta na podstawie identyfikatora
         AppUser client = appUserRepository.findById(visit.getClient().getId()).orElseThrow(() -> new NotFoundException("Nie znaleziono klienta o podanym identyfikatorze"));
 

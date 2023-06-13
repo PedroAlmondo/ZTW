@@ -24,6 +24,7 @@ public class VisitController {
 
     @PostMapping
     public ResponseEntity<?> makeAReservation(@RequestBody Visit visit) throws NotFoundException {
+
         return ResponseEntity.ok(visitService.makeAReservation(visit));
     }
 

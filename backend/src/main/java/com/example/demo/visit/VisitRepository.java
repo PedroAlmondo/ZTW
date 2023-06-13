@@ -36,4 +36,6 @@ public interface VisitRepository
     @Query("SELECT v FROM Visit v WHERE v.service.id = :id")
     List<Visit> findByServiceId(@Param("id") Long service_id);
 
+    @Query("SELECT COUNT(v) > 0 FROM Visit v WHERE v.startTime = :startTime")
+    boolean existsByStartTime(LocalDateTime startTime);
 }
