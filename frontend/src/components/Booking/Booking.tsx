@@ -249,7 +249,7 @@ function Booking() {
                         <Stack alignItems='center' justifyContent='center'>
                             <Typography sx={{ fontSize: '24px', color: 'rgb(23, 23, 23)', fontWeight: 700, padding: '24px' }}>Umów wizytę</Typography>
                             <LocalizationProvider localeText={plPL.components.MuiLocalizationProvider.defaultProps.localeText} dateAdapter={AdapterDayjs} adapterLocale='pl'>
-                                <DateCalendar views={['day']} defaultValue={dayjs()} value={currentDate} onChange={dateChangeHandler} />
+                                <DateCalendar disablePast views={['day']} defaultValue={dayjs()} value={currentDate} onChange={dateChangeHandler} />
                             </LocalizationProvider>
                             <ToggleButtonGroup
                                 size='medium'
