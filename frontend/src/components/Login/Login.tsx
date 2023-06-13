@@ -1,7 +1,11 @@
-import React from 'react'
+import React, { Dispatch, SetStateAction } from 'react'
 import { Stack, Typography, TextField, Button, Snackbar, Alert } from '@mui/material'
 
-function Login() {
+interface LoginProps {
+    setUserId: Dispatch<SetStateAction<string | null>>
+}
+
+function Login(props: LoginProps) {
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
 
@@ -47,6 +51,7 @@ function Login() {
                 localStorage.setItem('userFirstName', actualData.firstName);
                 localStorage.setItem('userLastName', actualData.lastName);
                 localStorage.setItem('userRole', actualData.appUserRole);
+                props.setUserId(actualData.id)
                 setOpen(true);
             })
             .catch((err) => {

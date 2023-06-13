@@ -22,6 +22,9 @@ VALUES
     ('Combo', 30, 25.0, 'Włosy + broda');
 
 
+update app_user
+set app_user_role = 'ADMIN'
+WHERE email = 'piotrekzieba86@gmail.com';
 
 select * from app_user;
 select * from visit p

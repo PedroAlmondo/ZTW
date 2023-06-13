@@ -44,9 +44,9 @@ function Register() {
                     );
                 }
                 setOpen(true);
-                return response.json();
             })
             .catch((err) => {
+                console.log(err.message)
                 setErrorOpen(true);
             })
             .finally(() => {
