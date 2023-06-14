@@ -24,6 +24,8 @@ VALUES
 
 update app_user
 set app_user_role = 'ADMIN'
+WHERE email = 'kamilnowak@gmail.com';
+
 WHERE email = 'piotrekzieba86@gmail.com';
 
 select * from app_user;

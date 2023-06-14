@@ -37,7 +37,7 @@ public class VisitService {
 
     public Visit makeAReservation(Visit visit) throws NotFoundException {
 
-        if( visitRepository.existsByStartTime(visit.getStartTime()) ) throw new EntityExistsException("Someone's already booked that date.");
+        //if( visitRepository.existsByStartTime(visit.getStartTime()) ) throw new EntityExistsException("Someone's already booked that date.");
         // Pobranie klienta na podstawie identyfikatora
         AppUser client = appUserRepository.findById(visit.getClient().getId()).orElseThrow(() -> new NotFoundException("Nie znaleziono klienta o podanym identyfikatorze"));
 
@@ -92,7 +92,7 @@ public class VisitService {
     }
 
     public List<Visit> getAllVisits() {
-        return visitRepository.findAll();
+        return visitRepository.getVisitsOrdered();
     }
 
     public List<Visit> specificUserVisits(Long id) {

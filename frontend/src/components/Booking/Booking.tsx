@@ -196,6 +196,7 @@ function Booking() {
 
             })
             .catch((err) => {
+                console.log(err)
                 setErrorOpen(true);
             })
             .finally(() => {
@@ -230,7 +231,7 @@ function Booking() {
 
     return (
         <>
-            <Stack sx={{ maxWidth: '1024px', margin: 'auto', minHeight: '100vh', padding: '40px' }}>
+            {localStorage.getItem('userRole') && <Stack sx={{ maxWidth: '1024px', margin: 'auto', minHeight: '100vh', padding: '40px' }}>
                 <Modal open={modalOpen} onClose={handleClose}>
                     <Stack direction='column'
                         justifyContent='space-between'
@@ -276,8 +277,9 @@ function Booking() {
                     </Stack>
                 </Modal>
                 <Typography sx={{ marginLeft: 'auto', marginRight: 'auto', fontSize: '40px', fontWeight: 700 }}>Nasze usługi</Typography>
-                {servicesData && servicesData.map(({ id, name, durationMins, price, description }) => <Service key={id} name={name} price={price} duration={durationMins} description={description} onClick={() => appointmentOnClick(id)}></Service>)}
-            </Stack>
+                {servicesData &&  servicesData.map(({ id, name, durationMins, price, description }) => <Service key={id} name={name} price={price} duration={durationMins} description={description} onClick={() => appointmentOnClick(id)}></Service>)}
+            </Stack> }
+
             <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
                 <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
                     {localStorage.getItem('userRole') === 'USER' ? 'Pomyślnie umówiono wizytę!' : 'Pomyślnie usunięto usługę!'}
